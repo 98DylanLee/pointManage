@@ -1,0 +1,5 @@
+{
+  "java.import.gradle.wrapper.enabled": true,
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.test.defaultConfig": "point-api"
+}
