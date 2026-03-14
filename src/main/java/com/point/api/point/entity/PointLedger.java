@@ -16,10 +16,18 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Check;
 
 @Getter
 @Entity
 @Table(name = "point_ledger")
+@Check(constraints = "amount_won > 0")
+@Check(constraints = "remained_amount_won >= 0")
+@Check(constraints = "remained_amount_won <= amount_won")
+@Check(constraints = "tx_type in ('EARN','ADMIN_GIFT','EARN_CANCEL','USE','USE_CANCEL','CANCEL_RETURN','EXPIRE')")
+@Check(constraints = "((tx_type in ('EARN','ADMIN_GIFT','CANCEL_RETURN') and expired_at is not null) or (tx_type in ('EARN_CANCEL','USE','USE_CANCEL','EXPIRE')))")
+@Check(constraints = "((tx_type in ('EARN','ADMIN_GIFT','CANCEL_RETURN') and remained_amount_won between 0 and amount_won) or (tx_type in ('EARN_CANCEL','USE','USE_CANCEL','EXPIRE') and remained_amount_won = 0))")
+@Check(constraints = "((tx_type = 'USE' and order_id is not null) or (tx_type <> 'USE'))")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PointLedger {
 
@@ -109,5 +117,20 @@ public class PointLedger {
 
     public void restoreRemained(long amount) {
         this.remainedAmountWon += amount;
+    }
+
+    public boolean isUsableLotAt(LocalDateTime at) {
+        return (txType == PointTxType.EARN || txType == PointTxType.ADMIN_GIFT || txType == PointTxType.CANCEL_RETURN)
+                && remainedAmountWon > 0
+                && expiredAt != null
+                && expiredAt.isAfter(at);
+    }
+
+    public boolean isExpiredAt(LocalDateTime at) {
+        return expiredAt != null && !expiredAt.isAfter(at);
+    }
+
+    public void expireAt(LocalDateTime at) {
+        this.expiredAt = at;
     }
 }

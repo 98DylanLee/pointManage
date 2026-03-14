@@ -35,4 +35,12 @@ public class PointWallet {
     public void add(long amount) {
         this.balanceWon += amount;
     }
+
+    public void subtract(long amount) {
+        this.balanceWon -= amount;
+    }
+
+    public void replaceBalance(long amount) {
+        this.balanceWon = amount;
+    }
 }

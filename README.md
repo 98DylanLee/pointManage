@@ -1,15 +1,20 @@
 # point-api
 
 29CM 백엔드 과제를 위한 Java 21 / Spring Boot 3 기반 포인트 서비스입니다.
-현재는 적립 기능만 구현되어 있으며, 이후 사용, 사용취소, 적립취소, 만료 배치로 확장할 수 있도록 기본 골격을 `albus-web` 스타일에 맞춰 정리했습니다.
+현재는 적립, 적립취소, 사용, 사용취소 기능을 구현했으며, 이후 만료 배치까지 확장할 수 있도록 기본 골격을 `albus-web` 스타일에 맞춰 정리했습니다.
 
 ## Current Scope
 
 - 포인트 적립 API `POST /api/v1/points/earn`
+- 포인트 적립취소 API `POST /api/v1/points/earn-cancel`
+- 포인트 사용 API `POST /api/v1/points/use`
+- 포인트 사용취소 API `POST /api/v1/points/use-cancel`
 - 멱등키(`pointKey`) 기반 중복 요청 방지
 - 정책 테이블 기반 적립 한도 / 만료일 / 최대 보유 한도 검증
+- 관리자 수기지급 우선 사용, 만료일 임박 순 차감
+- 사용 상세 추적과 사용취소 시 원 lot 복구 또는 `CANCEL_RETURN` 재적립
 - H2 인메모리 DB와 초기 정책 데이터 로딩
-- `MockMvc` 기반 컨트롤러 테스트
+- `MockMvc` 및 SpringBootTest 기반 테스트
 - Swagger UI, Actuator health/metrics 노출
 
 ## Package Structure

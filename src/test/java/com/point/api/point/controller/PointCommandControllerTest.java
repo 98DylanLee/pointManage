@@ -8,11 +8,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.point.api.point.dto.PointEarnCancelRequest;
+import com.point.api.point.dto.PointEarnCancelResponse;
 import com.point.api.point.dto.PointEarnRequest;
 import com.point.api.point.dto.PointEarnResponse;
+import com.point.api.point.dto.PointUsageDetailResponse;
+import com.point.api.point.dto.PointUseCancelRequest;
+import com.point.api.point.dto.PointUseCancelResponse;
+import com.point.api.point.dto.PointUseRequest;
+import com.point.api.point.dto.PointUseResponse;
 import com.point.api.point.entity.PointTxType;
+import com.point.api.point.entity.PointUsageDetailType;
 import com.point.api.point.service.PointCommandService;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -108,5 +117,90 @@ class PointCommandControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 적립취소요청을_생성한다() throws Exception {
+        LocalDateTime createdAt = LocalDateTime.of(2026, 3, 14, 10, 0, 0);
+        given(pointCommandService.cancelEarn(any())).willReturn(new PointEarnCancelResponse(
+                10L,
+                "cancel-key-001",
+                "point-key-001",
+                100L,
+                PointTxType.EARN_CANCEL,
+                1000L,
+                createdAt
+        ));
+
+        PointEarnCancelRequest request = new PointEarnCancelRequest(100L, "cancel-key-001", "point-key-001", null);
+
+        mockMvc.perform(post("/api/v1/points/earn-cancel")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.txType").value("EARN_CANCEL"))
+                .andExpect(jsonPath("$.data.originalPointKey").value("point-key-001"));
+    }
+
+    @Test
+    void 포인트_사용요청을_생성한다() throws Exception {
+        LocalDateTime createdAt = LocalDateTime.of(2026, 3, 14, 10, 0, 0);
+        given(pointCommandService.use(any())).willReturn(new PointUseResponse(
+                11L,
+                "use-key-001",
+                100L,
+                "ORDER-100",
+                PointTxType.USE,
+                1200L,
+                300L,
+                createdAt,
+                List.of(
+                        new PointUsageDetailResponse(PointUsageDetailType.USE, "A", null, 1000L),
+                        new PointUsageDetailResponse(PointUsageDetailType.USE, "B", null, 200L)
+                )
+        ));
+
+        PointUseRequest request = new PointUseRequest(100L, 1200L, "use-key-001", "ORDER-100", "order-request-100", 2000L, null);
+
+        mockMvc.perform(post("/api/v1/points/use")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.txType").value("USE"))
+                .andExpect(jsonPath("$.data.orderNo").value("ORDER-100"))
+                .andExpect(jsonPath("$.data.usageDetails[0].sourcePointKey").value("A"));
+    }
+
+    @Test
+    void 포인트_사용취소요청을_생성한다() throws Exception {
+        LocalDateTime createdAt = LocalDateTime.of(2026, 3, 14, 10, 0, 0);
+        given(pointCommandService.cancelUse(any())).willReturn(new PointUseCancelResponse(
+                12L,
+                "use-cancel-key-001",
+                "use-key-001",
+                100L,
+                PointTxType.USE_CANCEL,
+                1100L,
+                1400L,
+                100L,
+                createdAt,
+                List.of(
+                        new PointUsageDetailResponse(PointUsageDetailType.USE_CANCEL_REGRANT, "A", "E", 1000L),
+                        new PointUsageDetailResponse(PointUsageDetailType.USE_CANCEL_RESTORE, "B", null, 100L)
+                )
+        ));
+
+        PointUseCancelRequest request = new PointUseCancelRequest(100L, 1100L, "use-cancel-key-001", "use-key-001", null);
+
+        mockMvc.perform(post("/api/v1/points/use-cancel")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.txType").value("USE_CANCEL"))
+                .andExpect(jsonPath("$.data.remainingCancelableAmount").value(100L))
+                .andExpect(jsonPath("$.data.usageDetails[0].targetPointKey").value("E"));
     }
 }
