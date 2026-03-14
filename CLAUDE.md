@@ -11,6 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ERD를 `resource/` 하위에 PDF 또는 이미지로 포함 (필수)
 - AWS 아키텍처 구성도를 `resource/` 하위에 PDF 또는 이미지로 포함 (옵션)
 - 빌드 방법 및 과제 설명을 `README.md`에 작성 (필수)
+- 과제를 판단하는 관리자가 테스트 하기 용이해야 함. mock @Test 등 적극적 사용
 
 ## Business Rules
 

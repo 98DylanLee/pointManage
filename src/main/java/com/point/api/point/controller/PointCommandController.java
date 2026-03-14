@@ -1,6 +1,6 @@
 package com.point.api.point.controller;
 
-import com.point.api.point.dto.ApiResponse;
+import com.point.api.core.api.ApiResponse;
 import com.point.api.point.dto.PointEarnRequest;
 import com.point.api.point.dto.PointEarnResponse;
 import com.point.api.point.service.PointCommandService;

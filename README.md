@@ -1,26 +1,70 @@
 # point-api
 
-Java 21, Spring Boot 3.x, H2 기반의 포인트 백엔드 기본 프로젝트입니다.
+29CM 백엔드 과제를 위한 Java 21 / Spring Boot 3 기반 포인트 서비스입니다.
+현재는 적립 기능만 구현되어 있으며, 이후 사용, 사용취소, 적립취소, 만료 배치로 확장할 수 있도록 기본 골격을 `albus-web` 스타일에 맞춰 정리했습니다.
 
-현재 포함된 범위:
+## Current Scope
 
-- 포인트 적립 엔드포인트 1개
-- JPA/H2 기본 설정
+- 포인트 적립 API `POST /api/v1/points/earn`
+- 멱등키(`pointKey`) 기반 중복 요청 방지
+- 정책 테이블 기반 적립 한도 / 만료일 / 최대 보유 한도 검증
+- H2 인메모리 DB와 초기 정책 데이터 로딩
 - `MockMvc` 기반 컨트롤러 테스트
-- VS Code `Test Runner for Java` 사용을 위한 기본 설정
+- Swagger UI, Actuator health/metrics 노출
 
-## Test Runner
+## Package Structure
 
-VS Code에서 바로 테스트를 실행하려면 다음 확장을 사용하면 됩니다.
+```text
+com.point.api
+├── config
+├── core
+│   ├── api
+│   └── exception
+└── point
+    ├── controller
+    ├── dto
+    ├── entity
+    ├── repository
+    └── service
+```
 
-- `Extension Pack for Java`
-- `Test Runner for Java`
+`albus-web`처럼 공통 관심사는 `config`, `core`로 올리고, 실제 비즈니스는 도메인 패키지 아래에 두는 구성을 따랐습니다.
 
-프로젝트를 열면 `.vscode` 설정으로 Gradle import가 자동 반영됩니다.
-테스트는 테스트 파일 상단의 Run Test / Debug Test 버튼이나 `Gradle Test` task로 실행할 수 있습니다.
+## Run Locally
 
-## Gradle test
+기본 프로필은 `local`이며 H2 메모리 DB를 사용합니다.
+
+```bash
+./gradlew bootRun
+```
+
+주요 경로:
+
+- API base: `http://localhost:8080/api/v1`
+- Swagger UI: `http://localhost:8080/api-test`
+- OpenAPI docs: `http://localhost:8080/swagger-ui/api-docs`
+- H2 console: `http://localhost:8080/h2-console`
+- Health: `http://localhost:8080/actuator/health`
+
+## Test
 
 ```bash
 ./gradlew test
 ```
+
+VS Code에서는 `Extension Pack for Java`, `Test Runner for Java` 확장을 사용하면 바로 테스트를 실행할 수 있습니다.
+
+## Assignment Architecture
+
+AWS 기반으로 서비스한다고 가정한 제출용 아키텍처 이미지를 리소스에 포함했습니다.
+
+- `src/main/resources/architecture/aws-backend-architecture.svg`
+
+구성 요약:
+
+- CloudFront / Route 53
+- ALB + ECS Fargate 위 Spring Boot API
+- RDS PostgreSQL
+- Secrets Manager / Parameter Store
+- CloudWatch / X-Ray
+- SQS / EventBridge 기반 후속 비동기 처리 확장
