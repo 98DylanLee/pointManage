@@ -1,7 +1,8 @@
 package com.point.api.point.controller;
 
-import com.point.api.point.dto.PointAccrualRequest;
-import com.point.api.point.dto.PointTransactionResponse;
+import com.point.api.point.dto.ApiResponse;
+import com.point.api.point.dto.PointEarnRequest;
+import com.point.api.point.dto.PointEarnResponse;
 import com.point.api.point.service.PointCommandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,9 @@ public class PointCommandController {
 
     private final PointCommandService pointCommandService;
 
-    @PostMapping("/accruals")
+    @PostMapping("/earn")
     @ResponseStatus(HttpStatus.CREATED)
-    public PointTransactionResponse accrue(@Valid @RequestBody PointAccrualRequest request) {
-        return pointCommandService.accrue(request);
+    public ApiResponse<PointEarnResponse> earn(@Valid @RequestBody PointEarnRequest request) {
+        return ApiResponse.ok(pointCommandService.earn(request));
     }
 }

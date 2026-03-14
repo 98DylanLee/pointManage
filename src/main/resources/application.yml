@@ -20,9 +20,17 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
+    # Hibernate 가 테이블을 먼저 생성한 뒤 data.sql 이 실행되도록 순서 보장
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
   jackson:
     time-zone: Asia/Seoul
 
 logging:
+  charset:
+    console: UTF-8
+    file: UTF-8
   level:
     org.hibernate.SQL: debug

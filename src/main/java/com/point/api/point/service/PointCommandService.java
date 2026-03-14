@@ -1,9 +1,9 @@
 package com.point.api.point.service;
 
-import com.point.api.point.dto.PointAccrualRequest;
-import com.point.api.point.dto.PointTransactionResponse;
+import com.point.api.point.dto.PointEarnRequest;
+import com.point.api.point.dto.PointEarnResponse;
 
 public interface PointCommandService {
 
-    PointTransactionResponse accrue(PointAccrualRequest request);
+    PointEarnResponse earn(PointEarnRequest request);
 }
