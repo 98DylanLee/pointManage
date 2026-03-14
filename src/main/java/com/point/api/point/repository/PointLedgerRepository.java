@@ -63,4 +63,18 @@ public interface PointLedgerRepository extends JpaRepository<PointLedger, Long> 
     long sumUsableBalance(@Param("userId") Long userId,
                           @Param("lotTypes") List<PointTxType> lotTypes,
                           @Param("at") LocalDateTime at);
+
+    @Query("""
+            select p
+            from PointLedger p
+            left join fetch p.order
+            left join fetch p.relatedPoint
+            where p.userId = :userId
+              and p.createdAt >= :startDateTime
+              and p.createdAt < :endExclusive
+            order by p.createdAt asc, p.pointId asc
+            """)
+    List<PointLedger> findHistoryByUserIdAndCreatedAtBetween(@Param("userId") Long userId,
+                                                             @Param("startDateTime") LocalDateTime startDateTime,
+                                                             @Param("endExclusive") LocalDateTime endExclusive);
 }

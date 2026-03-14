@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.point.api.point.dto.PointEarnCancelRequest;
 import com.point.api.point.dto.PointEarnRequest;
+import com.point.api.point.dto.PointHistoryResponse;
 import com.point.api.point.dto.PointUseCancelRequest;
 import com.point.api.point.dto.PointUseResponse;
 import com.point.api.point.dto.PointUseRequest;
@@ -13,6 +14,7 @@ import com.point.api.point.entity.PointTxType;
 import com.point.api.point.entity.PointUsageDetailType;
 import com.point.api.point.repository.PointLedgerRepository;
 import com.point.api.point.repository.PointWalletRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ class PointCommandServiceIntegrationTest {
 
     @Autowired
     private PointCommandService pointCommandService;
+
+    @Autowired
+    private PointQueryService pointQueryService;
 
     @Autowired
     private PointLedgerRepository pointLedgerRepository;
@@ -118,5 +123,58 @@ class PointCommandServiceIntegrationTest {
         assertThat(expireLedger.getAmountWon()).isEqualTo(1000L);
         assertThat(pointLedgerRepository.findByPointKey("EXPIRE-ME")).get().extracting(PointLedger::getRemainedAmountWon).isEqualTo(0L);
         assertThat(pointWalletRepository.findById(4L)).get().extracting(wallet -> wallet.getBalanceWon()).isEqualTo(0L);
+    }
+
+    @Test
+    void 기간내_포인트_히스토리를_조회한다() {
+        pointCommandService.earn(new PointEarnRequest(5L, 1000L, "HISTORY-EARN", false, 30, null));
+        pointCommandService.use(new PointUseRequest(5L, 300L, "HISTORY-USE", "ORDER-HISTORY", "ORDER-REQ-HISTORY", 1000L, null));
+
+        PointHistoryResponse response = pointQueryService.getHistory(
+                5L,
+                LocalDate.now().minusDays(1),
+                LocalDate.now().plusDays(1)
+        );
+
+        assertThat(response.userId()).isEqualTo(5L);
+        assertThat(response.histories()).extracting("pointKey")
+                .contains("HISTORY-EARN", "HISTORY-USE");
+        assertThat(response.histories().stream().filter(item -> "HISTORY-USE".equals(item.pointKey())).findFirst())
+                .get()
+                .extracting(item -> item.orderNo())
+                .isEqualTo("ORDER-HISTORY");
+    }
+
+    @Test
+    void 과제_예시흐름이_히스토리에_어떻게_보이는지_검증한다() {
+        pointCommandService.earn(new PointEarnRequest(6L, 1000L, "A", false, 30, null));
+        pointCommandService.earn(new PointEarnRequest(6L, 500L, "B", false, 30, null));
+        pointCommandService.use(new PointUseRequest(6L, 1200L, "C", "A1234", "ORDER-REQ-A1234", 3000L, null));
+
+        PointLedger earnA = pointLedgerRepository.findByPointKey("A").orElseThrow();
+        earnA.expireAt(LocalDateTime.now().minusMinutes(1));
+
+        pointCommandService.cancelUse(new PointUseCancelRequest(6L, 1100L, "D", "C", null));
+
+        PointHistoryResponse response = pointQueryService.getHistory(
+                6L,
+                LocalDate.now().minusDays(1),
+                LocalDate.now().plusDays(1)
+        );
+
+        assertThat(response.histories()).extracting("pointKey")
+                .contains("A", "B", "C", "D")
+                .anyMatch(key -> key.toString().startsWith("D-return-"))
+                .doesNotContain("expire-" + earnA.getPointId());
+
+        assertThat(response.histories().stream().filter(item -> "C".equals(item.pointKey())).findFirst())
+                .get()
+                .extracting(item -> item.orderNo())
+                .isEqualTo("A1234");
+
+        assertThat(response.histories().stream().filter(item -> "D".equals(item.pointKey())).findFirst())
+                .get()
+                .extracting(item -> item.relatedPointKey())
+                .isEqualTo("C");
     }
 }

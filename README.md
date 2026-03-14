@@ -9,6 +9,7 @@
 - 포인트 적립취소 API `POST /api/v1/points/earn-cancel`
 - 포인트 사용 API `POST /api/v1/points/use`
 - 포인트 사용취소 API `POST /api/v1/points/use-cancel`
+- 포인트 히스토리 조회 API `GET /api/v1/points/history?userId={id}&startDate=yyyy-MM-dd&endDate=yyyy-MM-dd`
 - 멱등키(`pointKey`) 기반 중복 요청 방지
 - 정책 테이블 기반 적립 한도 / 만료일 / 최대 보유 한도 검증
 - 관리자 수기지급 우선 사용, 만료일 임박 순 차감
@@ -48,7 +49,7 @@ com.point.api
 - API base: `http://localhost:8080/api/v1`
 - Swagger UI: `http://localhost:8080/api-test`
 - OpenAPI docs: `http://localhost:8080/swagger-ui/api-docs`
-- H2 console: `http://localhost:8080/h2-console`
+- H2 console: `http://localhost:8080/h2-console` (`JDBC URL: jdbc:h2:mem:pointdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE`)
 - Health: `http://localhost:8080/actuator/health`
 
 ## Test
