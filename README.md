@@ -60,6 +60,15 @@ com.point.api
 
 VS Code에서는 `Extension Pack for Java`, `Test Runner for Java` 확장을 사용하면 바로 테스트를 실행할 수 있습니다.
 
+## Postman
+
+Postman import 파일을 함께 제공합니다.
+
+- Collection: `postman/point-api.postman_collection.json`
+- Environment: `postman/point-api.local.postman_environment.json`
+
+가져온 뒤 local environment를 선택하면 구현된 API와 예시 시나리오를 바로 실행할 수 있습니다.
+
 ## Assignment Architecture
 
 AWS 기반으로 서비스한다고 가정한 제출용 아키텍처 이미지를 리소스에 포함했습니다.

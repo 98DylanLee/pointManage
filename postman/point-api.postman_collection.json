@@ -1,0 +1,332 @@
+{
+  "info": {
+    "_postman_id": "d49452d0-0a56-4c00-a07a-4e60460be111",
+    "name": "point-api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for point-api assignment flows."
+  },
+  "item": [
+    {
+      "name": "Point Commands",
+      "item": [
+        {
+          "name": "Earn Point",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"amount\": 1000,\n  \"pointKey\": \"A\",\n  \"adminGift\": false,\n  \"expireDays\": 365,\n  \"description\": \"signup bonus\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/points/earn",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "points",
+                "earn"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Earn Cancel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"pointKey\": \"EARN-CANCEL-1\",\n  \"originalPointKey\": \"A\",\n  \"description\": \"earn cancel sample\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/points/earn-cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "points",
+                "earn-cancel"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Use Point",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"amount\": 1200,\n  \"pointKey\": \"C\",\n  \"orderNo\": \"A1234\",\n  \"orderRequestKey\": \"ORDER-REQ-A1234\",\n  \"totalAmount\": 3000,\n  \"description\": \"order use sample\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/points/use",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "points",
+                "use"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Use Cancel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"amount\": 1100,\n  \"pointKey\": \"D\",\n  \"originalUsePointKey\": \"C\",\n  \"description\": \"partial use cancel sample\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/points/use-cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "points",
+                "use-cancel"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Point Queries",
+      "item": [
+        {
+          "name": "Get Point History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/points/history?userId={{userId}}&startDate={{startDate}}&endDate={{endDate}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "points",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                },
+                {
+                  "key": "startDate",
+                  "value": "{{startDate}}"
+                },
+                {
+                  "key": "endDate",
+                  "value": "{{endDate}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Example Scenario",
+      "description": "A -> B -> C -> D flow for quick reviewer testing.",
+      "item": [
+        {
+          "name": "Step 1 - Earn A",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"amount\": 1000,\n  \"pointKey\": \"A\",\n  \"adminGift\": false,\n  \"expireDays\": 30,\n  \"description\": \"scenario A\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/points/earn",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "points",
+                "earn"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Step 2 - Earn B",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"amount\": 500,\n  \"pointKey\": \"B\",\n  \"adminGift\": false,\n  \"expireDays\": 30,\n  \"description\": \"scenario B\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/points/earn",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "points",
+                "earn"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Step 3 - Use C",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"amount\": 1200,\n  \"pointKey\": \"C\",\n  \"orderNo\": \"A1234\",\n  \"orderRequestKey\": \"ORDER-REQ-A1234\",\n  \"totalAmount\": 3000,\n  \"description\": \"scenario C\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/points/use",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "points",
+                "use"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Step 4 - Use Cancel D",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"amount\": 1100,\n  \"pointKey\": \"D\",\n  \"originalUsePointKey\": \"C\",\n  \"description\": \"scenario D\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/points/use-cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "points",
+                "use-cancel"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Step 5 - History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/points/history?userId={{userId}}&startDate={{startDate}}&endDate={{endDate}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "points",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                },
+                {
+                  "key": "startDate",
+                  "value": "{{startDate}}"
+                },
+                {
+                  "key": "endDate",
+                  "value": "{{endDate}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "userId",
+      "value": "100"
+    },
+    {
+      "key": "startDate",
+      "value": "2026-03-01"
+    },
+    {
+      "key": "endDate",
+      "value": "2026-03-31"
+    }
+  ]
+}
